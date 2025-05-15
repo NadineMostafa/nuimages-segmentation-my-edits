@@ -63,6 +63,7 @@ class NuImagesDataset(object):
                 sd_token = sample['key_camera_token']
                 if sd_token in sd_tokens_with_objects:
                     self.samples_with_objects.append(i)
+            self.samples_with_objects = self.samples_with_objects[::10]
             print("[INFO] Done. %d samples remaining out of %d." % (len(self.samples_with_objects), len(self.nuimages.sample)))
         else:
             # Keep all samples if remove_empty set to false
