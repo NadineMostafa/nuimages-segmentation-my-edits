@@ -9,19 +9,21 @@ from torchvision.models.detection.mask_rcnn import MaskRCNNPredictor
 from utils import transforms as T
 
 
-def get_model_instance_segmentation(num_classes=33, pretrained=True):
+def get_model_instance_segmentation(num_classes=33, pretrained=True, freeze_backbone=True):
     # load an instance segmentation model pre-trained pre-trained on COCO
     model = torchvision.models.detection.maskrcnn_resnet50_fpn(pretrained=pretrained)
 
-    # get number of input features for the classifier
+    # Freeze backbone layers
+    if freeze_backbone:
+        for name, parameter in model.backbone.named_parameters():
+            parameter.requires_grad_(False)
+
+    # Replace prediction heads
     in_features = model.roi_heads.box_predictor.cls_score.in_features
-    # replace the pre-trained head with a new one
     model.roi_heads.box_predictor = FastRCNNPredictor(in_features, num_classes)
 
-    # now get the number of input features for the mask classifier
     in_features_mask = model.roi_heads.mask_predictor.conv5_mask.in_channels
     hidden_layer = 256
-    # and replace the mask predictor with a new one
     model.roi_heads.mask_predictor = MaskRCNNPredictor(in_features_mask,
                                                        hidden_layer,
                                                        num_classes)
