@@ -36,22 +36,20 @@ if __name__ == "__main__":
 
     # Move model to GPU
     model.to(device)
-
+    
+    n_epochs = 20
     # Construct optimizer
     params = [p for p in model.parameters() if p.requires_grad]
-    optimizer = torch.optim.SGD(params, lr=0.005,
-                                    momentum=0.9, weight_decay=0.0005)
-    # and a learning rate scheduler
-    lr_scheduler = torch.optim.lr_scheduler.StepLR(optimizer,
-                                                   step_size=3,
-                                                   gamma=0.1)
+    optimizer = torch.optim.SGD(params, lr=0.001, momentum=0.9, weight_decay=0.0005)
+    lr_scheduler = torch.optim.lr_scheduler.CosineAnnealingLR(optimizer, T_max=n_epochs)
 
 
-    n_epochs = 25
     for epoch in range(n_epochs):
         train_one_epoch(model, optimizer, data_loader, device, epoch, print_freq=10)
         lr_scheduler.step()
         evaluate(model, data_loader_val, device=device)
+        print(f"Using device: {device}")
+        print(f"CUDA available: {torch.cuda.is_available()}")
 
     torch.save(model.state_dict(), "nuimages_maskrcnn.pth")
 

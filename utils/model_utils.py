@@ -42,6 +42,6 @@ def collate_fn(batch):
     return tuple(zip(*batch))
 
 def load_model(model_filename, num_classes=33):
-    model = get_model_instance_segmentation(num_classes, pretrained=False)
+    model = get_model_instance_segmentation(num_classes, freeze_backbone=True)
     model.load_state_dict(str(model_filename))
     return model
