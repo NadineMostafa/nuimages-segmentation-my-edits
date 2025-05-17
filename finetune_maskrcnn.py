@@ -36,7 +36,7 @@ if __name__ == "__main__":
 
     # Move model to GPU
     model.to(device)
-    
+
     n_epochs = 20
     # Construct optimizer
     params = [p for p in model.parameters() if p.requires_grad]
@@ -47,9 +47,14 @@ if __name__ == "__main__":
     for epoch in range(n_epochs):
         train_one_epoch(model, optimizer, data_loader, device, epoch, print_freq=10)
         lr_scheduler.step()
-        evaluate(model, data_loader_val, device=device)
         print(f"Using device: {device}")
         print(f"CUDA available: {torch.cuda.is_available()}")
+
+        if epoch % 5 == 0:
+            # Evaluate on the validation set
+            evaluate(model, data_loader_val, device=device)
+            # Save the model
+            torch.save(model.state_dict(), f"nuimages_maskrcnn_epoch_{epoch}.pth")
 
     torch.save(model.state_dict(), "nuimages_maskrcnn.pth")
 
