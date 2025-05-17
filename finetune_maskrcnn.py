@@ -28,8 +28,8 @@ if __name__ == "__main__":
 
     device = torch.device('cuda:0') if torch.cuda.is_available() else torch.device('cpu')
 
-    data_loader = DataLoader(dataset, batch_size=2, shuffle=True, num_workers=4, collate_fn=collate_fn)
-    data_loader_val = DataLoader(dataset_val, batch_size=1, shuffle=False, num_workers=4,
+    data_loader = DataLoader(dataset, batch_size=4, shuffle=True, num_workers=2, collate_fn=collate_fn)
+    data_loader_val = DataLoader(dataset_val, batch_size=1, shuffle=False, num_workers=2,
                                  collate_fn=collate_fn)
 
     model = get_model_instance_segmentation(num_classes)
@@ -47,7 +47,7 @@ if __name__ == "__main__":
                                                    gamma=0.1)
 
 
-    n_epochs = 50
+    n_epochs = 25
     for epoch in range(n_epochs):
         train_one_epoch(model, optimizer, data_loader, device, epoch, print_freq=10)
         lr_scheduler.step()
